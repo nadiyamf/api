@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Input Data</title>
+
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #dcede3;
+        line-height: 1.6;
+        margin: 0;
+        padding: 0;
+    }
+
+    #container {
+        text-align: center;
+        background-color: rgb(114, 151, 59)), 103, 247);
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+        max-width: 400px;
+        margin: 0 auto;
+        margin-bottom: 20px;
+    }
+
+    /* Judul */
+    h1, h2, h3 {
+        text-align: center;
+        color: #000000;
+        font-size: 50px;
+        margin-bottom: 20px;
+        text-transform: uppercase;
+        font-weight: bold;
+    }
+
+    table {
+        width: 80%;
+        border-collapse: collapse;
+        background-color: #043315;
+        margin: 0 auto;
+        border-radius: 5px;
+    }
+
+    th, td {
+        border: 1px solid #043315;
+        background-color: rgb(223, 229, 203);
+        padding: 10px;
+        color: #000000;
+    }
+
+    #id,
+    #firstName,
+    #lastName,
+    #email,
+    #email2,
+    #profesi,
+    #submit {
+        text-align: center;
+        background-color: rgb(223, 229, 203);
+        color: #030c07;
+        border: 1px solid #043315;
+        padding: 5px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-bottom: 2px;
+        transition: background-color 0.3s ease;
+    }
+
+    #submit {
+        background-color: #043315;
+        color: rgb(223, 229, 203);
+        border: 1px solid #9ec3ac;
+    }
+
+    #searchInput {
+        text-align: center;
+        background-color: rgb(223, 229, 203);
+        color: #050d08;
+        border: 1px solid #043315;
+        padding: 5px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-bottom: 10px;
+        transition: background-color 0.3s ease
+    }
+</style>
+
+</head>
+<body>
+    <h1>INPUT DATA</h1>
+
+    <div id="container">
+        <form id="addForm">
+            <label for="id">Id:</label>
+            <input type="text" id="id" name="id" required><br><br>
+            <label for="firstName">First Name:</label>
+            <input type="text" id="firstName" name="firstName" required><br><br>
+            <label for="lastName">Last Name:</label>
+            <input type="text" id="lastName" name="lastName" required><br><br>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required><br><br>
+            <label for="email2">Email2:</label>
+            <input type="email" id="email2" name="email2" required><br><br>
+            <label for="profesi">Profesi:</label>
+            <input type="text" id="profesi" name="profesi" required><br><br>
+            <input type="submit" id="submit" value="Submit">
+        </form>
+
+    </div>
+
+    <label for="searchInput">Search:</label>
+    <input type="text" id="searchInput" oninput="searchTable()" placeholder="Cari berdasarkan ID atau Nama...">
+
+    <table id="mahasiswaTable">
+        <tr>
+            <th>Id</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Email</th>
+            <th>Email2</th>
+            <th>Profesi</th>
+        </tr>
+    </table>
+
+    <script>
+        function getDataFromCSV() {
+            fetch('datapribadi.csv')
+                .then(response => response.text())
+                .then(data => {
+                    const rows = data.split('\n');
+                    const headers = rows[0].split(',');
+                    const mahasiswaData = rows.slice(1).map(row => row.split(','));
+
+                    const table = document.getElementById('mahasiswaTable');
+                    for (let i = 0; i < mahasiswaData.length; i++) {
+                        const row = document.createElement('tr');
+                        for (let j = 0; j < headers.length; j++) {
+                            const cell = document.createElement(i === 0 ? 'th' : 'td');
+                            cell.textContent = mahasiswaData[i][j];
+                            row.appendChild(cell);
+                        }
+                        table.appendChild(row);
+                    }
+                });
+        }
+        function addDataToTable(event) {
+            event.preventDefault();
+
+            const id = document.getElementById('id').value;
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+            const email = document.getElementById('email').value;
+            const email2 = document.getElementById('email2').value;
+            const profesi = document.getElementById('profesi').value;
+
+            const table = document.getElementById('mahasiswaTable');
+            const newRow = table.insertRow(-1);
+            const cell1 = newRow.insertCell(0);
+            const cell2 = newRow.insertCell(1);
+            const cell3 = newRow.insertCell(2);
+            const cell4 = newRow.insertCell(3);
+            const cell5 = newRow.insertCell(4);
+            const cell6 = newRow.insertCell(5);
+
+            cell1.textContent = id;
+            cell2.textContent = firstName;
+            cell3.textContent = lastName;
+            cell4.textContent = email;
+            cell5.textContent = email2;
+            cell6.textContent = profesi;
+
+            document.getElementById('addForm').reset();
+        }
+
+        getDataFromCSV();
+
+        document.getElementById('addForm').addEventListener('submit', addDataToTable);
+
+        function searchTable() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const table = document.getElementById('mahasiswaTable');
+            const rows = table.getElementsByTagName('tr');
+
+            for (let i = 1; i < rows.length; i++) {
+                const cells = rows[i].getElementsByTagName('td');
+                let found = false;
+
+                for (let j = 0; j < cells.length; j++) {
+                    const cellText = cells[j].textContent.toLowerCase();
+                    if (cellText.includes(input)) {
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (found) {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+        }
+    </script>
+</body>
+</html>
